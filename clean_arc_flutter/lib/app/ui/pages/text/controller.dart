@@ -10,12 +10,15 @@ class LoginController extends BaseController {
   User _auth;
   UserData _userData;
   bool loading = false;
-  String datareverse;
+  int cou = 0;
+  String datareverse, undo1;
+  List<String> datainput = List<String>();
 
   bool _isErrorEmployeeCode = false, _isObscured = true;
 
   TextEditingController _input = new TextEditingController();
   TextEditingController _passwordInput = new TextEditingController();
+  String get undo12 => undo1;
 
   TextEditingController get input => _input;
   String get datareverses => datareverse;
@@ -28,7 +31,6 @@ class LoginController extends BaseController {
 
   LoginController(this._presenter, this._userData) : super() {
     _auth = User();
-    _passwordInput.addListener(_onInputChange);
   }
 
   void reverse() {
@@ -40,9 +42,36 @@ class LoginController extends BaseController {
     refreshUI();
   }
 
-  void undo() {
-    showLoading();
-    datareverse = datareverse.split('').reversed.join();
+  void count() {
+    cou = cou + 1;
+    print(input.text);
+    int k = cou - 1;
+    print(cou);
+    if (cou == 1) {
+      datainput.add(input.text);
+    } else if (cou.isEven) {
+      datainput.add(input.text);
+      undo(k);
+    } else {
+      datainput.add(input.text);
+      redo(cou);
+    }
+  }
+
+  void undo(int i) {
+    print("Undo");
+    print(i);
+    _input.text = datainput[i - 1];
+    refreshUI();
+    print(_input.text);
+    refreshUI();
+  }
+
+  void redo(int i) {
+    print("redo");
+    print(i);
+    _input.text = datainput[i-2];
+    print(_input.text);
     refreshUI();
     refreshUI();
   }
@@ -85,12 +114,7 @@ class LoginController extends BaseController {
     refreshUI();
   }
 
-  void _onInputChange() {
-    //_isError = _EmployeeCodeInput.text != "49494" ? true : false;
-    //_errorMessage = _EmployeeCodeInput.text != "49494" ? 'Error: kode Employee tidak valid ' : null;
-    _errorMessage.employeecode =
-        _input.text.length < 3 ? 'Kode Employee tidak valid ' : '';
-  }
+  void _onInputChange() {}
 }
 
 class ErrorMessage {

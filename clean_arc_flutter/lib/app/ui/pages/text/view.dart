@@ -85,7 +85,7 @@ class _LoginPageState extends ViewState<LoginPage, LoginController>
                     isDisabled: false,
                     buttonText: "undo/redo",
                     onPressed: () {
-                      controller.undo();
+                      controller.count();
                     },
                   ),
                 ),
