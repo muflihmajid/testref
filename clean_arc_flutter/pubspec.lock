@@ -614,6 +614,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.6"
+  undo:
+    dependency: "direct main"
+    description:
+      name: undo
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.0+2"
   vector_math:
     dependency: transitive
     description:

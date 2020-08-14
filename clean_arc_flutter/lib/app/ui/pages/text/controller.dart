@@ -4,8 +4,10 @@ import 'package:clean_arc_flutter/app/ui/pages/text/presenter.dart';
 import 'package:clean_arc_flutter/app/ui/pages/pages.dart';
 import 'package:clean_arc_flutter/domains/entities/user.dart';
 import 'package:flutter/widgets.dart';
+import 'package:undo/undo.dart';
 
 class LoginController extends BaseController {
+  SimpleStack controller = SimpleStack<String>("123");
   LoginPresenter _presenter;
   User _auth;
   UserData _userData;
@@ -31,6 +33,7 @@ class LoginController extends BaseController {
 
   LoginController(this._presenter, this._userData) : super() {
     _auth = User();
+    _input.addListener(_onInputChange);
   }
 
   void reverse() {
@@ -44,35 +47,26 @@ class LoginController extends BaseController {
 
   void count() {
     cou = cou + 1;
-    print(input.text);
-    int k = cou - 1;
-    print(cou);
     if (cou == 1) {
-      datainput.add(input.text);
     } else if (cou.isEven) {
-      datainput.add(input.text);
-      undo(k);
+      print("data undo depan ${controller.state}");
+      undo();
     } else {
-      datainput.add(input.text);
-      redo(cou);
+      redo();
     }
   }
 
-  void undo(int i) {
-    print("Undo");
-    print(i);
-    _input.text = datainput[i - 1];
-    refreshUI();
-    print(_input.text);
+  void undo() {
+    controller.undo();
+    _input.text = controller.state;
+    print("data undo ${_input.text}");
     refreshUI();
   }
 
-  void redo(int i) {
-    print("redo");
-    print(i);
-    _input.text = datainput[i-2];
-    print(_input.text);
-    refreshUI();
+  void redo() {
+    controller.redo();
+    _input.text = controller.state;
+    print("data redo ${_input.text}");
     refreshUI();
   }
 
@@ -83,24 +77,6 @@ class LoginController extends BaseController {
   @override
   void initListeners() {
     super.initListeners();
-
-    _presenter.loginOnNext = (User auth) {
-      _auth = auth;
-      refreshUI();
-    };
-
-    _presenter.loginOnComplete = () async {
-      _userData.fromUser(_auth);
-      _userData.password = _passwordInput.text;
-      await _userData.save();
-
-      dismissLoading();
-      Navigator.pushReplacementNamed(getContext(), Pages.main);
-    };
-
-    _presenter.loginOnError = (e) {
-      // do log here
-    };
   }
 
   @override
@@ -114,7 +90,12 @@ class LoginController extends BaseController {
     refreshUI();
   }
 
-  void _onInputChange() {}
+  void _onInputChange() {
+    if (_input.text == controller.state) {
+    } else {
+      controller.modify(_input.text);
+    }
+  }
 }
 
 class ErrorMessage {
